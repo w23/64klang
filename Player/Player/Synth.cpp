@@ -12,6 +12,7 @@
 #endif
 
 #ifndef STOREDSAMPLES_SKIP
+#ifdef _WIN32
 	#include <mmreg.h>
 	#include <msacm.h>
 //	#include <wmsdk.h> 
@@ -41,6 +42,7 @@ WAVEFORMATEX pcmFormat =
 	16,     // WORD        wBitsPerSample;     
 	0,		// WORD        cbSize;       // extra bytes after wfx struct, UNUSED
 };	
+#endif // #ifdef _WIN32
 #endif
 
 #ifndef GMDLS_SKIP
@@ -160,6 +162,7 @@ void _64klang_Init(BYTE* songStream, void* patchData, DWORD const1Offset, DWORD 
 		DWORD srcBufSize = *((DWORD*)compBuf);
 		compBuf += 2;
 
+#ifdef _WIN32
 		// set pcm format
 		pcmFormat.nSamplesPerSec = csr;
 		pcmFormat.nAvgBytesPerSec = csr*1*2;    // 1 channel a 2 bytes (16bit) per sample
@@ -171,11 +174,12 @@ void _64klang_Init(BYTE* songStream, void* patchData, DWORD const1Offset, DWORD 
 			gsmFormat.wfx.nAvgBytesPerSec = 4478;	
 		if (csr == 11025)
 			gsmFormat.wfx.nAvgBytesPerSec = 2239;		
+#endif
 
 		// convert gsm to pcm
 		DWORD dstBufSize = 0;
 		LPBYTE dstBuf = NULL;
-		_64klang_ACMConvert(&gsmFormat, &pcmFormat, (LPBYTE)compBuf, srcBufSize, dstBuf, dstBufSize);
+		// FIXME linux _64klang_ACMConvert(&gsmFormat, &pcmFormat, (LPBYTE)compBuf, srcBufSize, dstBuf, dstBufSize);
 		// consider odd buffer sizes as well since the storage is WORD sized
 		if (srcBufSize & 1)
 			srcBufSize++;
@@ -215,6 +219,7 @@ void _64klang_Init(BYTE* songStream, void* patchData, DWORD const1Offset, DWORD 
 #endif
 
 #ifndef GMDLS_SKIP
+#ifdef _WIN32
 	char lpGMDLSName[1024];
 	int len = GetSystemDirectoryA(lpGMDLSName, 1024);
 	SynthMemCopy(lpGMDLSName+len, (void*)lpGMDLSSuffix, 30);
@@ -353,13 +358,15 @@ void _64klang_Init(BYTE* songStream, void* patchData, DWORD const1Offset, DWORD 
 
 	instruments.clear();
 #endif
-
+#endif
 #endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef STOREDSAMPLES_SKIP
+// FIXME linux
+#ifdef _WIN32
 
 int _64klang_ACMConvert(void* srcFormat, void* dstFormat, LPBYTE srcBuffer, DWORD srcBufferSize, LPBYTE& dstBuffer, DWORD& dstBufferSize)
 {
@@ -413,7 +420,7 @@ int _64klang_ACMConvert(void* srcFormat, void* dstFormat, LPBYTE srcBuffer, DWOR
 
 	return 0;
 }
-
+#endif // #ifdef _WIN32
 #endif // #ifndef SAMPLER_STOREDSAMPLES_SKIP
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

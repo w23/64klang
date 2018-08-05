@@ -5,7 +5,11 @@
 #ifndef __SYNTH_H__
 #define __SYNTH_H__
 
+#ifdef _WIN32
 #include <windows.h>
+#else
+#include "msvctypes.h"
+#endif
 
 void _64klang_Init			(BYTE* songStream, void* patchData, DWORD const1Offset, DWORD const2Offset, DWORD maxoffset);
 int  _64klang_ACMConvert	(void* srcFormat, void* dstFormat, LPBYTE srcBuffer, DWORD srcBufferSize, LPBYTE& dstBuffer, DWORD& dstBufferSize);

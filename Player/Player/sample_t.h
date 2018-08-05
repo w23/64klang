@@ -10,8 +10,14 @@
 #ifndef _SAMPLE_T_
 #define _SAMPLE_T_
 
+#ifdef _WIN32
 #include <intrin.h>
+#else
+#include "msvctypes.h"
+#include <x86intrin.h>
+#endif
 #include <smmintrin.h>
+
 
 #define S_SKIP_UNUSED
 

@@ -5,7 +5,9 @@
 #ifndef _SYNTH_ALLOCATOR_H_
 #define _SYNTH_ALLOCATOR_H_
 
-#include "windows.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 void* __fastcall SynthMalloc(int size);
 void __fastcall SynthFree(void* ptr);

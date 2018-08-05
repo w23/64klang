@@ -4033,6 +4033,7 @@ void SYNTHCALL SVFILTER_tick(SynthNode* n)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef SAPI_SKIP
+#ifdef _WIN32
 wchar_t			lpSAPITextBuffer[1024*1024];
 
 GUID speechGUIDFormat =
@@ -4107,10 +4108,15 @@ const IID IID_ISpStream64k =
 #ifdef CODE_SECTIONS
 #pragma code_seg(".sn3f")
 #endif
+#endif
 void SYNTHCALL SAPI_tick(SynthNode* n)
 {
 	NODE_STATEFUL_PROLOG;
 
+
+#ifndef _WIN32
+}
+#else
 	if (_mm_testz_si128(n->e.pi, n->e.pi))
 	{
 		// gate signal for wavetable creation and also for no preocessing again
@@ -4268,7 +4274,8 @@ void SYNTHCALL SAPI_tick(SynthNode* n)
 		}
 #endif
 	}
-}
+} // SAPI_tick
+#endif // #ifdef _WIN32
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4744,7 +4751,7 @@ int mode = *(n->modePointer);
 			{
 				// end is always start + searchlen
 				seekEndIdx = seekStartIdx + targetSearch.i[1];
-				if (seekEndIdx >= s_toInt(n->v[10]).m128i_i32[0])
+				if (seekEndIdx >= M128I_I32(s_toInt(n->v[10]), 0))
 					break;
 			}
 			else
@@ -4764,7 +4771,7 @@ int mode = *(n->modePointer);
 			while (samples--)
 			{
 				sample_t ipos = s_floor(pos);
-				*wtBuf++ = s_lerp(buf[s_toInt(ipos).m128i_i32[0]], buf[s_toInt(s_floor(pos + stepSize)).m128i_i32[0]], pos - ipos);
+				*wtBuf++ = s_lerp(buf[M128I_I32(s_toInt(ipos), 0)], buf[M128I_I32(s_toInt(s_floor(pos + stepSize)), 0)], pos - ipos);
 				pos += stepSize;
 			}
 			// go to next start index including an optional skip
